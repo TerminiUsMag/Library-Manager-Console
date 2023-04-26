@@ -35,7 +35,6 @@ namespace LibraryManagerConsole.Core.Services
                     Author = b.Author,
                     DateOfRelease = b.DateOfRelease,
                     Genres = b.Genres,
-                    Rating = b.Rating
                 })
                 .ToListAsync();
         }
@@ -56,7 +55,6 @@ namespace LibraryManagerConsole.Core.Services
                 Author = book.Author,
                 DateOfRelease = book.DateOfRelease,
                 Genres = book.Genres,
-                Rating = book.Rating
             };
         }
     }

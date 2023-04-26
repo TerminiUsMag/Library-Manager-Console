@@ -1,9 +1,9 @@
 ﻿namespace LibraryManagerConsole.Core.Models
 {
     /// <summary>
-    /// Book with Id
+    /// Author with Id
     /// </summary>
-    public class BookModel : BookViewModel
+    public class AuthorModel
     {
         public int Id { get; set; }
     }

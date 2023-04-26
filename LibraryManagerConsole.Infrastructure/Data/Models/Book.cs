@@ -22,7 +22,5 @@ namespace LibraryManagerConsole.Infrastructure.Data.Models
         public ICollection<Genre> Genres { get; set; } = null!;
         [Required]
         public DateTime DateOfRelease { get; set; }
-        [Required]
-        public decimal Rating { get; set; }
     }
 }
