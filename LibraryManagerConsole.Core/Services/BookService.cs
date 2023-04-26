@@ -40,9 +40,10 @@ namespace LibraryManagerConsole.Core.Services
                 .ToListAsync();
         }
 
-        public Task DeleteBookAsync(BookModel book)
+        public async Task DeleteBookAsync(BookModel book)
         {
-            throw new NotImplementedException();
+            await repo.DeleteAsync<Book>(book.Id);
+            await repo.SaveChangesAsync();
         }
 
         public async Task<BookModel> GetBookByIdAsync(int id)

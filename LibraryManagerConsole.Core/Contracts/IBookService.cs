@@ -15,7 +15,7 @@ namespace LibraryManagerConsole.Core.Contracts
 
         Task<IEnumerable<BookModel>> AllBooksAsync();
 
-        Task GetBookByIdAsync(int id);
+        Task<BookModel> GetBookByIdAsync(int id);
 
     }
 }
