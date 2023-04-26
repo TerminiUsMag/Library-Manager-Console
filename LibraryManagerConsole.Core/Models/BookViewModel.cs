@@ -10,7 +10,7 @@ namespace LibraryManagerConsole.Core.Models
     {
         public BookViewModel()
         {
-            Genres = new List<Genre>();
+            Genres = new List<GenreModel>();
         }
         [Display(Name = "Book title")]
         [Required(AllowEmptyStrings = false, ErrorMessage = "The field '{0}' is required")]
@@ -20,21 +20,37 @@ namespace LibraryManagerConsole.Core.Models
         [Required(AllowEmptyStrings = false, ErrorMessage = "The field '{0}' is required")]
         public Author Author { get; set; } = null!;
         [Display(Name = "Book genres")]
-        public ICollection<Genre> Genres { get; set; } = null!;
+        public ICollection<GenreModel> Genres { get; set; } = null!;
         [Display(Name = "Book release date")]
         [Required(AllowEmptyStrings = false, ErrorMessage = "The field '{0}' is required")]
         public DateTime DateOfRelease { get; set; }
 
         public void AddGenre(string genreName)
         {
-            Genres.Add(new Genre
+            Genres.Add(new GenreModel
             {
                 Name = genreName
             });
         }
-        public void AddGenre(Genre genre)
+        public void AddGenre(GenreModel genre)
         {
             Genres.Add(genre);
+        }
+        public void RemoveGenre(string genreName)
+        {
+            GenreModel? genreModel = Genres.Where(g => g.Name == genreName).FirstOrDefault();
+            if (genreModel == null)
+            {
+                Console.WriteLine($"No such genre in '{this.Title}' book");
+                return;
+            }
+            var genre = new GenreModel
+            {
+                Name = genreModel.Name,
+                Books = genreModel.Books,
+                Id = genreModel.Id,
+            };
+            Genres.Remove(genre);
         }
     }
 }

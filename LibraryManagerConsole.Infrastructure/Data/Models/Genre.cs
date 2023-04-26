@@ -3,9 +3,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LibraryManagerConsole.Infrastructure.Data.Models
 {
-    public class Genre
+    public class GenreModel
     {
-        public Genre()
+        public GenreModel()
         {
             Books = new List<Book>();
         }

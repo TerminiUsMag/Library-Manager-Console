@@ -15,7 +15,7 @@ namespace LibraryManagerConsole.Infrastructure.Data
 
         public virtual DbSet<Book>? Books { get; set; }
         public virtual DbSet<Author>? Authors { get; set; }
-        public virtual DbSet<Genre>? Genres { get; set; }
+        public virtual DbSet<GenreModel>? Genres { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)

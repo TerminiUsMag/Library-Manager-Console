@@ -7,7 +7,7 @@ namespace LibraryManagerConsole.Infrastructure.Data.Models
     {
         public Book()
         {
-            Genres = new List<Genre>();
+            Genres = new List<GenreModel>();
         }
         [Key]
         [Column("BookId")]
@@ -19,7 +19,7 @@ namespace LibraryManagerConsole.Infrastructure.Data.Models
         [ForeignKey(nameof(Author))]
         public int AuthorId { get; set; }
         public Author Author { get; set; } = null!;
-        public ICollection<Genre> Genres { get; set; } = null!;
+        public ICollection<GenreModel> Genres { get; set; } = null!;
         [Required]
         public DateTime DateOfRelease { get; set; }
     }
