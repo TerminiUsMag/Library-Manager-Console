@@ -1,6 +1,6 @@
-﻿using LibraryManagerConsole.IO.Contracts;
+﻿using LibraryManagerConsole.Core.IO.Contracts;
 
-namespace LibraryManagerConsole.IO.Readers
+namespace LibraryManagerConsole.Core.IO.Readers
 {
     public class ConsoleReader : IReader
     {

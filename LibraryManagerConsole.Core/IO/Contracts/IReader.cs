@@ -1,4 +1,4 @@
-﻿namespace LibraryManagerConsole.IO.Contracts
+﻿namespace LibraryManagerConsole.Core.IO.Contracts
 {
     public interface IReader
     {

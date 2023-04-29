@@ -1,10 +1,10 @@
 ﻿using LibraryManagerConsole.Core.Contracts;
+using LibraryManagerConsole.Core.IO.Contracts;
+using LibraryManagerConsole.Core.IO.Readers;
+using LibraryManagerConsole.Core.IO.Writters;
 using LibraryManagerConsole.Core.Services;
 using LibraryManagerConsole.Infrastructure.Common;
 using LibraryManagerConsole.Infrastructure.Data;
-using LibraryManagerConsole.IO.Contracts;
-using LibraryManagerConsole.IO.Readers;
-using LibraryManagerConsole.IO.Writters;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 

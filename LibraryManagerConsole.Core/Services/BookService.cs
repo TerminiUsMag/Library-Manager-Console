@@ -1,4 +1,5 @@
 ﻿using LibraryManagerConsole.Core.Contracts;
+using LibraryManagerConsole.Core.IO.Contracts;
 using LibraryManagerConsole.Core.Models;
 using LibraryManagerConsole.Infrastructure.Common;
 using LibraryManagerConsole.Infrastructure.Data.Models;
@@ -10,9 +11,13 @@ namespace LibraryManagerConsole.Core.Services
     public class BookService : IBookService
     {
         private readonly IRepository repo = null!;
-        public BookService(IRepository _repo)
+        private readonly IWriter writer = null!;
+        private readonly IReader reader = null!;
+        public BookService(IRepository _repo, IWriter _writer, IReader _reader)
         {
             this.repo = _repo;
+            this.writer = _writer;
+            this.reader = _reader;
         }
 
         public async Task AddBookAsync(BookModel bookModel)
@@ -62,7 +67,7 @@ namespace LibraryManagerConsole.Core.Services
                 genresToAdd.Add(genres[y]);
             }
             book.Genres = genresToAdd;
-            Console.WriteLine($"Existing Genres added to book : {existingGenresCounter}");
+            writer.WriteLine($"Existing Genres added to book : {existingGenresCounter}");
             return book;
         }
 
@@ -78,7 +83,7 @@ namespace LibraryManagerConsole.Core.Services
             if (existingAuthor.Any())
             {
                 book.Author = existingAuthor.First();
-                Console.WriteLine("The author is existing!");
+                writer.WriteLine("The author is existing!");
             }
             else
             {
@@ -176,7 +181,7 @@ namespace LibraryManagerConsole.Core.Services
             }
             catch (ArgumentException aex)
             {
-                Console.WriteLine(aex.Message);
+                writer.WriteLine(aex.Message);
             }
         }
 
@@ -185,7 +190,7 @@ namespace LibraryManagerConsole.Core.Services
             GenreModel? genre = book.Genres.Where(g => g.Name == genreName).FirstOrDefault();
             if (genre == null)
             {
-                Console.WriteLine($"No such genre in '{book.Title}' book");
+                writer.WriteLine($"No such genre in '{book.Title}' book");
                 throw new ArgumentException($"No such genre in book - {book.Title}");
             }
             return genre;

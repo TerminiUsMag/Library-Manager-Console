@@ -1,6 +1,6 @@
-﻿using LibraryManagerConsole.IO.Contracts;
+﻿using LibraryManagerConsole.Core.IO.Contracts;
 
-namespace LibraryManagerConsole.IO.Writters
+namespace LibraryManagerConsole.Core.IO.Writters
 {
     public class ConsoleWriter : IWriter
     {
