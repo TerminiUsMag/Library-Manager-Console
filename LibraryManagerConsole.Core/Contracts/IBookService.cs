@@ -12,9 +12,10 @@ namespace LibraryManagerConsole.Core.Contracts
 
         Task<BookModel> GetBookByIdAsync(int id);
 
-        void AddGenre(BookModel book, string genreName);
+        void AddGenresToBookModel(BookModel book, string[] genreNames);
 
-        void AddGenre(BookModel book, GenreModel genre);
+        void AddGenreToBookModel(BookModel book, GenreModel genre);
+        BookModel CreateFullBookModel(string bookTitle, string authorFirstName, string authorMiddleName, string authorLastName, string[] bookGenres);
 
         void RemoveGenre(BookModel book, string genreName);
 

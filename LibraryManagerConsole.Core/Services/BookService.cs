@@ -3,6 +3,7 @@ using LibraryManagerConsole.Core.Models;
 using LibraryManagerConsole.Infrastructure.Common;
 using LibraryManagerConsole.Infrastructure.Data.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace LibraryManagerConsole.Core.Services
 {
@@ -165,14 +166,20 @@ namespace LibraryManagerConsole.Core.Services
                 }).ToList()
             };
         }
-        public void AddGenre(BookModel book, string genreName)
+        public void AddGenresToBookModel(BookModel book, string[] genreNames)
         {
-            book.Genres.Add(new GenreModel
+            for (int i = 0; i < genreNames.Length; i++)
             {
-                Name = genreName
-            });
+                if (!book.Genres.Any(g => g.Name == genreNames[i]))
+                {
+                    book.Genres.Add(new GenreModel
+                    {
+                        Name = genreNames[i]
+                    });
+                }
+            }
         }
-        public void AddGenre(BookModel book, GenreModel genre)
+        public void AddGenreToBookModel(BookModel book, GenreModel genre)
         {
 
             if (book.Genres.Any(g => g.Name == genre.Name))
@@ -204,6 +211,28 @@ namespace LibraryManagerConsole.Core.Services
                 throw new ArgumentException($"No such genre in book - {book.Title}");
             }
             return genre;
+        }
+
+        public BookModel CreateFullBookModel(string bookTitle, string authorFirstName, string authorMiddleName, string authorLastName, string[] bookGenres)
+        {
+            if (bookTitle.IsNullOrEmpty() || authorFirstName.IsNullOrEmpty() || authorMiddleName.IsNullOrEmpty() || authorLastName.IsNullOrEmpty() || bookGenres.Length < 1)
+            {
+                throw new ArgumentException("One of the required parameters is null or empty!");
+            }
+                var newBookModel = new BookModel
+                {
+                    Title = bookTitle,
+                    Author = new AuthorModel
+                    {
+                        FirstName = authorFirstName,
+                        MiddleName = authorMiddleName,
+                        LastName = authorLastName
+                    },
+                    DateOfRelease = DateTime.Now,
+                    //Genres = new List<GenreModel>()
+                };
+            this.AddGenresToBookModel(newBookModel, bookGenres);
+            return newBookModel;
         }
 
         public void AddAuthor(BookModel book, string authorName)
