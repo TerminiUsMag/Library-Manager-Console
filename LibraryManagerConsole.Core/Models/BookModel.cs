@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace LibraryManagerConsole.Core.Models
+﻿namespace LibraryManagerConsole.Core.Models
 {
     /// <summary>
     /// Book with Id

@@ -23,10 +23,6 @@ namespace LibraryManagerConsole.Core.Services
                 DateOfRelease = bookModel.DateOfRelease,
             };
 
-            //book.Genres.Add(bookModel.Genres.Select(bm => new Genre
-            //{
-            //    Name = bm.Name
-            //}).ToList();
             var allBooks = await repo.AllReadonly<Book>().ToListAsync();
             if (allBooks.Any(b => b.Title == book.Title))
             {
@@ -201,18 +197,18 @@ namespace LibraryManagerConsole.Core.Services
             {
                 throw new ArgumentException("One of the required parameters is null or empty!");
             }
-                var newBookModel = new BookModel
+            var newBookModel = new BookModel
+            {
+                Title = bookTitle,
+                Author = new AuthorModel
                 {
-                    Title = bookTitle,
-                    Author = new AuthorModel
-                    {
-                        FirstName = authorFirstName,
-                        MiddleName = authorMiddleName,
-                        LastName = authorLastName
-                    },
-                    DateOfRelease = DateTime.Now,
-                    //Genres = new List<GenreModel>()
-                };
+                    FirstName = authorFirstName,
+                    MiddleName = authorMiddleName,
+                    LastName = authorLastName
+                },
+                DateOfRelease = DateTime.Now,
+                //Genres = new List<GenreModel>()
+            };
             this.AddGenresToBookModel(newBookModel, bookGenres);
             return newBookModel;
         }

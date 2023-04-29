@@ -1,5 +1,4 @@
 ﻿using LibraryManagerConsole.Core.Contracts;
-using LibraryManagerConsole.Core.Models;
 using LibraryManagerConsole.Core.Services;
 using LibraryManagerConsole.Infrastructure.Common;
 using LibraryManagerConsole.Infrastructure.Data;
