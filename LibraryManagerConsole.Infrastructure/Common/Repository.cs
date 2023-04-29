@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Linq.Expressions;
 
-namespace Eventmi.Infrastructure.Data.Common
+namespace LibraryManagerConsole.Infrastructure.Common
 {
     /// <summary>
     /// Implementation of repository access methods
@@ -49,6 +49,8 @@ namespace Eventmi.Infrastructure.Data.Common
         public async Task AddAsync<T>(T entity) where T : class
         {
             await DbSet<T>().AddAsync(entity);
+            //var dbSet = DbSet<T>();
+            //dbSet.Add(entity);
         }
 
         /// <summary>

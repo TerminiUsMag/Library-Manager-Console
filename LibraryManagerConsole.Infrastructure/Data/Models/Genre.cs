@@ -3,9 +3,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LibraryManagerConsole.Infrastructure.Data.Models
 {
-    public class GenreModel
+    public class Genre
     {
-        public GenreModel()
+        public Genre()
         {
             Books = new List<Book>();
         }
@@ -16,6 +16,10 @@ namespace LibraryManagerConsole.Infrastructure.Data.Models
         [MaxLength(50)]
         public string Name { get; set; } = null!;
         public ICollection<Book> Books { get; set; }
+        public override string ToString()
+        {
+            return this.Name;
+        }
 
     }
 }

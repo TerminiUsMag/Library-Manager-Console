@@ -1,12 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace LibraryManagerConsole.Core.Models
 {
     /// <summary>
     /// Author without Id
     /// </summary>
-    public class AuthorViewModel : AuthorModel
+    public class AuthorViewModel
     {
         [Display(Name = "Author's first name")]
         [Required(AllowEmptyStrings = false, ErrorMessage = "The field '{0}' is required")]

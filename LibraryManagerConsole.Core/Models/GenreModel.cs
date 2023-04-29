@@ -1,14 +1,13 @@
 ﻿namespace LibraryManagerConsole.Core.Models
 {
     /// <summary>
-    /// Book with Id
+    /// Genre model with Id
     /// </summary>
-    public class BookModel : BookViewModel
+    public class GenreModel : GenreViewModel
     {
-        public BookModel()
+        public GenreModel()
             : base()
         {
-
         }
         public int Id { get; set; }
     }

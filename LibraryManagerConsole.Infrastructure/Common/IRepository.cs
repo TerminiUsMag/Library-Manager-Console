@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace Eventmi.Infrastructure.Data.Common
+namespace LibraryManagerConsole.Infrastructure.Common
 {
     /// <summary>
     /// Abstraction of repository access methods
@@ -101,7 +101,7 @@ namespace Eventmi.Infrastructure.Data.Common
         /// </summary>
         /// <param name="table">Table name</param>
         public Task Truncate(string table);
-        
+
         /// <summary>
         /// Undo changes
         /// </summary>
