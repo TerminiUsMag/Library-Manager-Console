@@ -7,8 +7,13 @@ using System.Threading.Tasks;
 
 namespace LibraryManagerConsole.IO.Writters
 {
-    public class ConsoleWriter : IWritter
+    public class ConsoleWriter : IWriter
     {
+        public void EmptyLine()
+        {
+            Console.WriteLine();
+        }
+
         public void Write<T>(T value)
         {
             Console.Write(value);

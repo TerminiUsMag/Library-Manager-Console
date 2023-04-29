@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace LibraryManagerConsole.IO.Contracts
 {
-    public interface IWritter
+    public interface IWriter
     {
         void Write<T>(T value);
         void WriteLine<T>(T Value);
+        void EmptyLine();
     }
 }

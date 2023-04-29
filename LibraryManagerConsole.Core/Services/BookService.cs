@@ -98,7 +98,7 @@ namespace LibraryManagerConsole.Core.Services
 
         public async Task<IEnumerable<BookModel>> AllBooksAsync()
         {
-            var books = await repo.AllReadonly<Book>().Include(b => b.Author)
+            var books = await repo.AllReadonly<Book>().Include(b => b.Author).Include(b => b.Genres)
                 //.Select(b => new BookModel
                 //{
                 //    Id = b.Id,
@@ -132,7 +132,7 @@ namespace LibraryManagerConsole.Core.Services
                 Genres = b.Genres.Select(g => new GenreModel
                 {
                     Name = g.Name,
-                    Id = g.Id,
+                    //Id = g.Id,
                     Books = g.Books
                 }).ToList()
             }).ToList();
