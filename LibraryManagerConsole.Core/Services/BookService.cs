@@ -96,27 +96,9 @@ namespace LibraryManagerConsole.Core.Services
             return book;
         }
 
-        public async Task<IEnumerable<BookModel>> AllBooksAsync()
+        public async Task<IEnumerable<BookModel>> AllBooksReadOnlyAsync()
         {
             var books = await repo.AllReadonly<Book>().Include(b => b.Author).Include(b => b.Genres)
-                //.Select(b => new BookModel
-                //{
-                //    Id = b.Id,
-                //    Title = b.Title,
-                //    Author = new AuthorModel
-                //    {
-                //        FirstName = b.Author.FirstName,
-                //        MiddleName = b.Author.MiddleName,
-                //        LastName = b.Author.LastName,
-                //    },
-                //    DateOfRelease = b.DateOfRelease,
-                //    Genres = b.Genres.Select(g => new GenreModel
-                //    {
-                //        Name = g.Name,
-                //        Id = g.Id,
-                //        Books = g.Books
-                //    }).ToList()
-                //})
                 .ToListAsync();
             return books.Select(b => new BookModel
             {
@@ -256,6 +238,11 @@ namespace LibraryManagerConsole.Core.Services
         }
 
         public void UpdateReleaseDate(BookModel book, string releaseDate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<BookModel>> AllBooksAsync()
         {
             throw new NotImplementedException();
         }

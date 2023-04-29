@@ -8,6 +8,7 @@ namespace LibraryManagerConsole.Core.Contracts
 
         Task DeleteBookAsync(BookModel book);
 
+        Task<IEnumerable<BookModel>> AllBooksReadOnlyAsync();
         Task<IEnumerable<BookModel>> AllBooksAsync();
 
         Task<BookModel> GetBookByIdAsync(int id);

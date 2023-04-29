@@ -50,7 +50,7 @@ catch (ArgumentException aex)
     writer.WriteLine(aex.Message);
 }
 writer.WriteLine("Completed second part\n");
-var books = await bookService.AllBooksAsync();
+var books = await bookService.AllBooksReadOnlyAsync();
 foreach (var book in books)
 {
     writer.EmptyLine();
