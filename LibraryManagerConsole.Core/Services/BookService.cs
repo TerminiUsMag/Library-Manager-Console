@@ -13,11 +13,15 @@ public class BookService : IBookService
     private readonly IRepository repo = null!;
     private readonly IWriter writer = null!;
     private readonly IReader reader = null!;
-    public BookService(IRepository _repo, IWriter _writer, IReader _reader)
+    private readonly IGenreService genreService = null!;
+    private readonly IAuthorService authorService= null!;
+    public BookService(IRepository _repo, IWriter _writer, IReader _reader, IGenreService genreService, IAuthorService authorService)
     {
         this.repo = _repo;
         this.writer = _writer;
         this.reader = _reader;
+        this.genreService = genreService;
+        this.authorService = authorService;
     }
 
     public async Task AddBookAsync(BookModel bookModel)
@@ -34,68 +38,13 @@ public class BookService : IBookService
             throw new ArgumentException("There's already a book with that title in the library");
         }
 
-        book = await existingAuthor(book, bookModel);
-        book = await existingGenre(book, bookModel);
+        book = await authorService.ExistingAuthorFromBookModelToBook(book, bookModel);
+        book = await genreService.ExistingGenresFromBookModelToBook(book, bookModel);
 
         await repo.AddAsync(book);
         await repo.SaveChangesAsync();
     }
 
-    private async Task<Book> existingGenre(Book book, BookModel bookModel)
-    {
-        var existingGenres = await repo.All<Genre>().ToListAsync();
-        var genresToAdd = new List<Genre>();
-        var existingGenresCounter = 0;
-        for (int i = 0; i < existingGenres.Count; i++)
-        {
-            for (int x = 0; x < bookModel.Genres.Count; x++)
-            {
-                if (existingGenres[i].Name == bookModel.Genres[x].Name)
-                {
-                    bookModel.Genres.RemoveAt(x);
-                    genresToAdd.Add(existingGenres[i]);
-                    existingGenresCounter++;
-                }
-            }
-        }
-        var genres = bookModel.Genres.Select(g => new Genre
-        {
-            Name = g.Name
-        }).ToList();
-        for (int y = 0; y < genres.Count; y++)
-        {
-            genresToAdd.Add(genres[y]);
-        }
-        book.Genres = genresToAdd;
-        writer.WriteLine($"Existing Genres added to book : {existingGenresCounter}");
-        return book;
-    }
-
-    private async Task<Book> existingAuthor(Book book, BookModel bookModel)
-    {
-        var authors = await repo
-            .All<Author>()
-            .ToListAsync();
-        var existingAuthor = authors
-            .Where(a => a.FirstName == bookModel.Author.FirstName && a.MiddleName == bookModel.Author.MiddleName && a.LastName == bookModel.Author.LastName)
-            .ToList();
-
-        if (existingAuthor.Any())
-        {
-            book.Author = existingAuthor.First();
-            writer.WriteLine("The author is existing!");
-        }
-        else
-        {
-            book.Author = new Author
-            {
-                FirstName = bookModel.Author.FirstName,
-                MiddleName = bookModel.Author.MiddleName,
-                LastName = bookModel.Author.LastName,
-            };
-        }
-        return book;
-    }
 
     public async Task<IEnumerable<BookModel>> AllBooksReadOnlyAsync()
     {
@@ -121,10 +70,22 @@ public class BookService : IBookService
         }).ToList();
     }
 
-    public async Task DeleteBookAsync(BookModel book)
+    public async Task DeleteBookAsync(BookModel bookModel)
     {
+        var book = await repo.All<Book>().Where(b => b.Title == bookModel.Title).FirstOrDefaultAsync();
+        if (book == null)
+        {
+            return;
+        }
         await repo.DeleteAsync<Book>(book.Id);
         await repo.SaveChangesAsync();
+    }
+    public async Task DeleteBooksAsync(IEnumerable<BookModel> bookModels)
+    {
+        foreach (var bookModel in bookModels)
+        {
+            await DeleteBookAsync(bookModel);
+        }
     }
 
     public async Task<BookModel> GetBookByIdAsync(int id)
@@ -175,7 +136,7 @@ public class BookService : IBookService
     {
         try
         {
-            var genre = FindGenreInBook(book, genreName);
+            var genre = genreService.FindGenreInBook(book, genreName);
             book.Genres.Remove(genre);
             await repo.SaveChangesAsync();
         }
@@ -183,17 +144,6 @@ public class BookService : IBookService
         {
             writer.WriteLine(aex.Message);
         }
-    }
-
-    private GenreModel FindGenreInBook(BookModel book, string genreName)
-    {
-        GenreModel? genre = book.Genres.Where(g => g.Name == genreName).FirstOrDefault();
-        if (genre == null)
-        {
-            writer.WriteLine($"No such genre in '{book.Title}' book");
-            throw new ArgumentException($"No such genre in book - {book.Title}");
-        }
-        return genre;
     }
 
     public BookModel CreateFullBookModel(string bookTitle, string authorFirstName, string authorMiddleName, string authorLastName, string releaseDate, string[] bookGenres)
@@ -275,20 +225,5 @@ public class BookService : IBookService
         });
     }
 
-    public async Task<GenreModel> CreateGenre(string genreName)
-    {
-        if (genreName.IsNullOrEmpty())
-        {
-            throw new ArgumentException("Required argument is null or empty");
-        }
-        var genre = await repo.All<Genre>().Where(g => g.Name == genreName).FirstOrDefaultAsync();
-        if (genre == null)
-        {
-            return new GenreModel { Name = genreName };
-        }
-        else
-        {
-            return new GenreModel { Id = genre.Id, Name = genre.Name };
-        }
-    }
+    
 }

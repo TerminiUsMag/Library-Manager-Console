@@ -7,6 +7,7 @@ namespace LibraryManagerConsole.Core.Contracts
         Task AddBookAsync(BookModel book);
 
         Task DeleteBookAsync(BookModel book);
+        Task DeleteBooksAsync(IEnumerable<BookModel> bookModels);
 
         Task<IEnumerable<BookModel>> AllBooksReadOnlyAsync();
         Task<IEnumerable<BookModel>> AllBooksAsync();
@@ -19,7 +20,6 @@ namespace LibraryManagerConsole.Core.Contracts
         BookModel CreateFullBookModel(string bookTitle, string authorFirstName, string authorMiddleName, string authorLastName, string releaseDate, string[] bookGenres);
 
         void RemoveGenreFromBook(BookModel book, string genreName);
-        Task<GenreModel> CreateGenre(string genreName);
 
         //private GenreModel FindGenreInBook(BookModel book, string genreName);
 
