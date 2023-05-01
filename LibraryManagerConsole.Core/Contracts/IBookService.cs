@@ -22,9 +22,9 @@ namespace LibraryManagerConsole.Core.Contracts
 
         //private GenreModel FindGenreInBook(BookModel book, string genreName);
 
-        void AddAuthor(BookModel book, string authorName);
+        void EditAuthor(BookModel book, string authorName);
 
-        void AddAuthor(BookModel book, AuthorModel author);
+        void EditAuthor(BookModel book, AuthorModel author);
 
         void DeleteAuthor(BookModel book, string authorName);
 

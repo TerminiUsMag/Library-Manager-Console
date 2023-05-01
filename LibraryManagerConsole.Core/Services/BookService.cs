@@ -205,7 +205,7 @@ namespace LibraryManagerConsole.Core.Services
             //DateTime dateOfRelease;
             if (!DateTime.TryParse(releaseDate, out DateTime dateOfRelease))
             {
-                dateOfRelease = DateTime.Now;
+                dateOfRelease = DateTime.Now.Date;
             }
 
             var newBookModel = new BookModel
@@ -224,12 +224,12 @@ namespace LibraryManagerConsole.Core.Services
             return newBookModel;
         }
 
-        public void AddAuthor(BookModel book, string authorName)
+        public void EditAuthor(BookModel book, string authorName)
         {
             throw new NotImplementedException();
         }
 
-        public void AddAuthor(BookModel book, AuthorModel author)
+        public void EditAuthor(BookModel book, AuthorModel author)
         {
             throw new NotImplementedException();
         }
@@ -249,9 +249,30 @@ namespace LibraryManagerConsole.Core.Services
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<BookModel>> AllBooksAsync()
+        public async Task<IEnumerable<BookModel>> AllBooksAsync()
         {
-            throw new NotImplementedException();
+            var books = await repo.All<Book>()
+                .Include(b => b.Author)
+                .Include(b => b.Genres)
+                .ToListAsync();
+            return books.Select(b => new BookModel
+            {
+                Id = b.Id,
+                Title = b.Title,
+                Author = new AuthorModel
+                {
+                    FirstName = b.Author.FirstName,
+                    MiddleName = b.Author.MiddleName,
+                    LastName = b.Author.LastName,
+                    Id = b.Author.Id
+                },
+                DateOfRelease = b.DateOfRelease,
+                Genres = b.Genres.Select(g => new GenreModel
+                {
+                    Name = g.Name,
+                    Id = g.Id
+                }).ToList(),
+            });
         }
     }
 }
