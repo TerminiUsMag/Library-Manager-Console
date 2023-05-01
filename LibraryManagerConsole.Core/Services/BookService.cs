@@ -196,12 +196,18 @@ namespace LibraryManagerConsole.Core.Services
             return genre;
         }
 
-        public BookModel CreateFullBookModel(string bookTitle, string authorFirstName, string authorMiddleName, string authorLastName, string[] bookGenres)
+        public BookModel CreateFullBookModel(string bookTitle, string authorFirstName, string authorMiddleName, string authorLastName, string releaseDate, string[] bookGenres)
         {
             if (bookTitle.IsNullOrEmpty() || authorFirstName.IsNullOrEmpty() || authorMiddleName.IsNullOrEmpty() || authorLastName.IsNullOrEmpty() || bookGenres.Length < 1)
             {
-                throw new ArgumentException("One of the required parameters is null or empty!");
+                throw new ArgumentException("One or more of the required parameters is null or empty!");
             }
+            //DateTime dateOfRelease;
+            if (!DateTime.TryParse(releaseDate, out DateTime dateOfRelease))
+            {
+                dateOfRelease = DateTime.Now;
+            }
+
             var newBookModel = new BookModel
             {
                 Title = bookTitle,
@@ -211,7 +217,7 @@ namespace LibraryManagerConsole.Core.Services
                     MiddleName = authorMiddleName,
                     LastName = authorLastName
                 },
-                DateOfRelease = DateTime.Now,
+                DateOfRelease = dateOfRelease.Date,
                 //Genres = new List<GenreModel>()
             };
             this.AddGenresToBookModel(newBookModel, bookGenres);

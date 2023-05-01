@@ -32,6 +32,8 @@ writer.WriteLine("Write author's middle name");
 var authorMiddleName = reader.ReadLine().Trim();
 writer.WriteLine("Write author's last name");
 var authorLastName = reader.ReadLine().Trim();
+writer.WriteLine("Write book's release date in 'DD/MM/YYYY' format (default date is today)");
+var bookReleaseDate = reader.ReadLine().Trim();
 writer.WriteLine("Write the book's Genre/s (split them with semicolon ',') : ");
 var bookGenres = reader.ReadLine().Trim().Split(',');
 
@@ -39,7 +41,7 @@ var bookGenres = reader.ReadLine().Trim().Split(',');
 
 try
 {
-    var newBook = bookService.CreateFullBookModel(bookTitle, authorFirstName, authorMiddleName, authorLastName, bookGenres);
+    var newBook = bookService.CreateFullBookModel(bookTitle, authorFirstName, authorMiddleName, authorLastName, bookReleaseDate, bookGenres);
     writer.WriteLine(newBook);
 
     await bookService.AddBookAsync(newBook);

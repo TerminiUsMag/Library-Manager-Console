@@ -16,7 +16,7 @@ namespace LibraryManagerConsole.Core.Contracts
         void AddGenresToBookModel(BookModel book, string[] genreNames);
 
         void AddGenreToBookModel(BookModel book, GenreModel genre);
-        BookModel CreateFullBookModel(string bookTitle, string authorFirstName, string authorMiddleName, string authorLastName, string[] bookGenres);
+        BookModel CreateFullBookModel(string bookTitle, string authorFirstName, string authorMiddleName, string authorLastName, string releaseDate, string[] bookGenres);
 
         void RemoveGenre(BookModel book, string genreName);
 

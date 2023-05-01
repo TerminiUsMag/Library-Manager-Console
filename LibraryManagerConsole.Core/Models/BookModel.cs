@@ -17,7 +17,7 @@
             return $@"{this.Title}
 Written By : {this.Author.ToString()}
 Genre : {string.Join(", ", this.Genres)}
-Released on : {this.DateOfRelease.ToString()}";
+Released on : {this.DateOfRelease.ToShortDateString()}";
         }
     }
 }
