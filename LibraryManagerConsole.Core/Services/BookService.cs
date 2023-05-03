@@ -23,7 +23,12 @@ public class BookService : IBookService
         this.genreService = genreService;
         this.authorService = authorService;
     }
-
+    /// <summary>
+    /// Adds book to DataBase
+    /// </summary>
+    /// <param name="bookModel">BookModel to add</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
     public async Task AddBookAsync(BookModel bookModel)
     {
         var book = new Book
