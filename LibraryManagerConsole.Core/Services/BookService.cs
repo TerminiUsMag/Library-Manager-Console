@@ -194,7 +194,7 @@ public class BookService : IBookService
 
         try
         {
-           var author = await authorService.FindAuthorAsync(authorFullname);
+            var author = await authorService.FindAuthorAsync(authorFullname);
             book.Author = author;
         }
         catch (Exception)
@@ -232,9 +232,26 @@ public class BookService : IBookService
         };
     }
 
-    public async void UpdateReleaseDate(BookModel bookModel, string releaseDate)
+    public void UpdateReleaseDate(BookModel bookModel, string releaseDate)
     {
-        var book = await repo.All<Book>().Where(b=>b.Title==bookModel.Title&&b.DateOfRelease == bookModel.DateOfRelease).FirstOrDefaultAsync();
+        DateTime.TryParse(releaseDate, out DateTime date);
+        UpdateReleaseDate(bookModel, date);
+    }
+
+    public async void UpdateReleaseDate(BookModel bookModel, DateTime releaseDate)
+    {
+        var book = await repo
+            .All<Book>()
+            .Where(b => b.Title == bookModel.Title && b.DateOfRelease == bookModel.DateOfRelease)
+            .FirstOrDefaultAsync();
+
+        if (book is null)
+        {
+            throw new ArgumentException("There's no such book in DB");
+        }
+
+        book.DateOfRelease = releaseDate;
+        await repo.SaveChangesAsync();
     }
 
     public async Task<IEnumerable<BookModel>> AllBooksAsync()

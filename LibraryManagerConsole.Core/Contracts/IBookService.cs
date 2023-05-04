@@ -29,9 +29,11 @@ namespace LibraryManagerConsole.Core.Contracts
 
         void DeleteAuthor(BookModel book, string authorName);
 
-        AuthorModel FindAuthor(string authorName);
+        Task<AuthorModel> FindAuthor(string authorName);
 
-        void UpdateReleaseDate(BookModel book, string releaseDate);
+        void UpdateReleaseDate(BookModel bookModel, string releaseDate);
+
+        void UpdateReleaseDate(BookModel bookModel, DateTime releaseDate);
 
 
 
