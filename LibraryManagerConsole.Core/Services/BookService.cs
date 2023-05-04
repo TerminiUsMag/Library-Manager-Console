@@ -234,8 +234,11 @@ public class BookService : IBookService
 
     public void UpdateReleaseDate(BookModel bookModel, string releaseDate)
     {
-        DateTime.TryParse(releaseDate, out DateTime date);
-        UpdateReleaseDate(bookModel, date);
+        if (DateTime.TryParse(releaseDate, out DateTime date))
+        {
+            UpdateReleaseDate(bookModel, date);
+        }
+;
     }
 
     public async void UpdateReleaseDate(BookModel bookModel, DateTime releaseDate)
