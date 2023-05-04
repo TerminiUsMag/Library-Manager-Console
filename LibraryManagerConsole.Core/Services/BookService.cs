@@ -215,11 +215,6 @@ public class BookService : IBookService
         await this.EditAuthorInBookModel(bookModel, authorFullName);
     }
 
-    public void DeleteAuthor(BookModel book, string authorName)
-    {
-        throw new NotImplementedException();
-    }
-
     public async Task<AuthorModel> FindAuthor(string authorName)
     {
         var author = await authorService.FindAuthorAsync(authorName);
