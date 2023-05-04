@@ -5,6 +5,7 @@ using LibraryManagerConsole.Infrastructure.Common;
 using LibraryManagerConsole.Infrastructure.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Runtime.CompilerServices;
 
 namespace LibraryManagerConsole.Core.Services;
 
@@ -14,7 +15,7 @@ public class BookService : IBookService
     private readonly IWriter writer = null!;
     private readonly IReader reader = null!;
     private readonly IGenreService genreService = null!;
-    private readonly IAuthorService authorService= null!;
+    private readonly IAuthorService authorService = null!;
     public BookService(IRepository _repo, IWriter _writer, IReader _reader, IGenreService genreService, IAuthorService authorService)
     {
         this.repo = _repo;
@@ -178,15 +179,40 @@ public class BookService : IBookService
         this.AddGenresToBookModel(newBookModel, bookGenres);
         return newBookModel;
     }
-
-    public void EditAuthor(BookModel book, string authorName)
+    //Test required!
+    public async Task EditAuthorInBookModel(BookModel bookModel, string authorFullname)
     {
-        throw new NotImplementedException();
+        var book = await repo
+            .All<Book>()
+            .Where(b => b.Title == bookModel.Title && b.DateOfRelease == bookModel.DateOfRelease)
+            .FirstOrDefaultAsync();
+
+        if (book is null)
+        {
+            throw new ArgumentException("There's no such book in DB");
+        }
+
+        try
+        {
+           var author = await authorService.FindAuthorAsync(authorFullname);
+            book.Author = author;
+        }
+        catch (Exception)
+        {
+            var author = book.Author;
+            var authorNames = authorFullname.Split(" ");
+            author.FirstName = authorNames[0];
+            author.MiddleName = authorNames[1];
+            author.LastName = authorNames[2];
+        }
+
+        await repo.SaveChangesAsync();
     }
 
-    public void EditAuthor(BookModel book, AuthorModel author)
+    public async Task EditAuthorInBookModel(BookModel bookModel, AuthorModel authorModel)
     {
-        throw new NotImplementedException();
+        var authorFullName = authorModel.ToString();
+        await this.EditAuthorInBookModel(bookModel, authorFullName);
     }
 
     public void DeleteAuthor(BookModel book, string authorName)
@@ -194,14 +220,21 @@ public class BookService : IBookService
         throw new NotImplementedException();
     }
 
-    public AuthorModel FindAuthor(string authorName)
+    public async Task<AuthorModel> FindAuthor(string authorName)
     {
-        throw new NotImplementedException();
+        var author = await authorService.FindAuthorAsync(authorName);
+        return new AuthorModel
+        {
+            FirstName = author.FirstName,
+            MiddleName = author.MiddleName,
+            LastName = author.LastName,
+            Id = author.Id
+        };
     }
 
-    public void UpdateReleaseDate(BookModel book, string releaseDate)
+    public async void UpdateReleaseDate(BookModel bookModel, string releaseDate)
     {
-        throw new NotImplementedException();
+        var book = await repo.All<Book>().Where(b=>b.Title==bookModel.Title&&b.DateOfRelease == bookModel.DateOfRelease).FirstOrDefaultAsync();
     }
 
     public async Task<IEnumerable<BookModel>> AllBooksAsync()
@@ -230,5 +263,5 @@ public class BookService : IBookService
         });
     }
 
-    
+
 }

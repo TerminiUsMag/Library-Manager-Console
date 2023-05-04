@@ -23,9 +23,9 @@ namespace LibraryManagerConsole.Core.Contracts
 
         //private GenreModel FindGenreInBook(BookModel book, string genreName);
 
-        void EditAuthor(BookModel book, string authorName);
+        Task EditAuthorInBookModel(BookModel bookModel, string authorName);
 
-        void EditAuthor(BookModel book, AuthorModel author);
+        Task EditAuthorInBookModel(BookModel bookModel, AuthorModel author);
 
         void DeleteAuthor(BookModel book, string authorName);
 
