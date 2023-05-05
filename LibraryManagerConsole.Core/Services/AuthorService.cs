@@ -20,19 +20,20 @@ namespace LibraryManagerConsole.Core.Services
         }
         public async Task<Book> ExistingAuthorFromBookModelToBook(Book book, BookModel bookModel)
         {
+            var existingAuthor = await FindAuthorAsync(bookModel.ToString());
 
-            var authors = await repo
-            .All<Author>()
-            .ToListAsync();
+            //var authors = await repo
+            //.All<Author>()
+            //.ToListAsync();
 
-            var existingAuthor = authors
-                .Where(a => a.FirstName == bookModel.Author.FirstName && a.MiddleName == bookModel.Author.MiddleName && a.LastName == bookModel.Author.LastName)
-                .ToList();
+            //var existingAuthor = authors
+            //    .Where(a => a.FirstName == bookModel.Author.FirstName && a.MiddleName == bookModel.Author.MiddleName && a.LastName == bookModel.Author.LastName)
+            //    .ToList();
 
-            if (existingAuthor.Any())
+            if (CheckIfAuthorIsValid(existingAuthor))
             {
-                book.Author = existingAuthor.First();
-                writer.WriteLine("The author is existing!");
+                book.Author = existingAuthor;
+                //writer.WriteLine("The author is existing!");
             }
             else
             {
@@ -56,10 +57,7 @@ namespace LibraryManagerConsole.Core.Services
                 throw new ArgumentException("There's no such book in the database");
             }
 
-            var author = await repo
-                .All<Author>()
-                .Where(a => a.FirstName == authorModel.FirstName && a.MiddleName == authorModel.MiddleName && a.LastName == authorModel.LastName)
-                .FirstOrDefaultAsync();
+            var author = await FindAuthorAsync(authorModel.ToString());
 
             if (author is null)
             {
@@ -77,10 +75,7 @@ namespace LibraryManagerConsole.Core.Services
 
         public async Task DeleteAuthorFromDBAsync(AuthorModel authorModel)
         {
-            var author = await repo
-                .All<Author>()
-                .Where(a => a.FirstName == authorModel.FirstName && a.MiddleName == authorModel.MiddleName && a.LastName == authorModel.LastName)
-                .FirstOrDefaultAsync();
+            var author = await this.FindAuthorAsync(authorModel.ToString());
 
             if (CheckIfAuthorIsValid(author!))
             {
@@ -118,24 +113,27 @@ namespace LibraryManagerConsole.Core.Services
 
             if (CheckIfAuthorIsValid(author!))
             {
-                throw new ArgumentException("No author with this ID in Database");
+                throw new ArgumentException("No author with this name in Database");
             }
 
             return author!;
         }
 
-        public async Task UpdateAuthorAsync(AuthorViewModel authorModel)
+        public async Task UpdateAuthorAsync(AuthorModel authorModel)
         {
-            var author = await repo
-                .All<Author>()
-                .Where(a => a.FirstName == authorModel.FirstName && a.MiddleName == authorModel.MiddleName && a.LastName == authorModel.LastName)
-                .FirstOrDefaultAsync();
-            if (CheckIfAuthorIsValid(author!))
+            if (CheckIfAuthorIsValid(authorModel))
+            {
+                throw new ArgumentException("Invalid or empty authorModel input");
+            }
+
+            var author = await FindAuthorAsync(authorModel.ToString());
+
+            if (CheckIfAuthorIsValid(author))
             {
                 throw new ArgumentException("There's no such author in Database");
             }
 
-            writer.WriteLine("Enter new full name for Author with ID:" + author!.Id + " (separate with ' ')");
+            writer.WriteLine("Enter new full name for Author with ID:" + author.Id + " (separate with ' ')");
             var newFullName = reader.ReadLine();
             var names = newFullName.Split(" ");
             author.FirstName = names[0];
@@ -144,7 +142,7 @@ namespace LibraryManagerConsole.Core.Services
             await repo.SaveChangesAsync();
         }
 
-        private bool CheckIfAuthorIsValid(Author author)
+        private bool CheckIfAuthorIsValid(Object author)
         {
             if (author is null)
             {

@@ -19,7 +19,7 @@ namespace LibraryManagerConsole.Core.Services
             this.writer = _writer;
             this.reader = _reader;
         }
-        public async Task<GenreModel> CreateGenre(string genreName)
+        public async Task<GenreModel> CreateGenreModel(string genreName)
         {
             if (genreName.IsNullOrEmpty())
             {

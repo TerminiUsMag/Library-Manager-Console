@@ -10,7 +10,7 @@ namespace LibraryManagerConsole.Core.Contracts
         Task DeleteAuthorFromDBAsync(AuthorModel authorModel);
         Task<Author> FindAuthorAsync(int id);
         Task<Author> FindAuthorAsync(string fullName);
-        Task UpdateAuthorAsync(AuthorViewModel authorModel);
+        Task UpdateAuthorAsync(AuthorModel authorModel);
 
     }
 }

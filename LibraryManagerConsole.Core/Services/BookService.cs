@@ -5,7 +5,6 @@ using LibraryManagerConsole.Infrastructure.Common;
 using LibraryManagerConsole.Infrastructure.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Runtime.CompilerServices;
 
 namespace LibraryManagerConsole.Core.Services;
 
@@ -32,17 +31,19 @@ public class BookService : IBookService
     /// <exception cref="ArgumentException"></exception>
     public async Task AddBookAsync(BookModel bookModel)
     {
+        var allBooks = await repo
+            .AllReadonly<Book>()
+            .Where(b => b.Title == bookModel.Title)
+            .FirstOrDefaultAsync();
+        if (allBooks is not null)
+        {
+            throw new ArgumentException("There's already a book with that title in the library");
+        }
         var book = new Book
         {
             Title = bookModel.Title,
             DateOfRelease = bookModel.DateOfRelease,
         };
-
-        var allBooks = await repo.AllReadonly<Book>().ToListAsync();
-        if (allBooks.Any(b => b.Title == book.Title))
-        {
-            throw new ArgumentException("There's already a book with that title in the library");
-        }
 
         book = await authorService.ExistingAuthorFromBookModelToBook(book, bookModel);
         book = await genreService.ExistingGenresFromBookModelToBook(book, bookModel);
