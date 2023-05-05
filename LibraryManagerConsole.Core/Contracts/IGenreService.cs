@@ -8,6 +8,7 @@ namespace LibraryManagerConsole.Core.Contracts
         Task AddGenre();
         Task<GenreModel> CreateGenreModel(string genreName);
         Task<Book> ExistingGenresFromBookModelToBook(Book book, BookModel bookModel);
-        GenreModel FindGenreInBook(BookModel book, string genreName);
+        GenreModel FindGenreInBookModel(BookModel bookModel, string genreName);
+        Task<GenreModel> FindGenreAsync(string genreName);
     }
 }

@@ -5,6 +5,7 @@ using LibraryManagerConsole.Infrastructure.Common;
 using LibraryManagerConsole.Infrastructure.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace LibraryManagerConsole.Core.Services;
 
@@ -80,7 +81,16 @@ public class BookService : IBookService
     public async Task DeleteBookAsync(BookModel bookModel)
     {
         var book = await repo.All<Book>().Where(b => b.Title == bookModel.Title).FirstOrDefaultAsync();
-        if (book == null)
+        if (book is null)
+        {
+            return;
+        }
+        await repo.DeleteAsync<Book>(book.Id);
+        await repo.SaveChangesAsync();
+    }
+    public async Task DeleteBookAsync(Book book)
+    {
+        if(book is null)
         {
             return;
         }
@@ -89,13 +99,22 @@ public class BookService : IBookService
     }
     public async Task DeleteBooksAsync(IEnumerable<BookModel> bookModels)
     {
+        var books = await repo.AllReadonly<Book>().ToListAsync();
+
+
         foreach (var bookModel in bookModels)
         {
-            await DeleteBookAsync(bookModel);
+            var book = books.Where(b => b.Title == bookModel.Title).FirstOrDefault();
+            //if (book is null)
+            //{
+            //    continue;
+            //}
+            
+            await DeleteBookAsync(book!);
         }
     }
 
-    public async Task<BookModel> GetBookByIdAsync(int id)
+    public async Task<BookModel> GetBookModelByIdAsync(int id)
     {
         var book = await repo.GetByIdAsync<Book>(id);
         return new BookModel
@@ -139,13 +158,12 @@ public class BookService : IBookService
         }
         book.Genres.Add(genre);
     }
-    public async void RemoveGenreFromBook(BookModel book, string genreName)
+    public void RemoveGenreFromBookModel(BookModel bookModel, string genreName)
     {
         try
         {
-            var genre = genreService.FindGenreInBook(book, genreName);
-            book.Genres.Remove(genre);
-            await repo.SaveChangesAsync();
+            var genre = genreService.FindGenreInBookModel(bookModel, genreName);
+            bookModel.Genres.Remove(genre);
         }
         catch (ArgumentException aex)
         {
@@ -207,7 +225,7 @@ public class BookService : IBookService
             author.LastName = authorNames[2];
         }
 
-        await repo.SaveChangesAsync();
+        //await repo.SaveChangesAsync();
     }
 
     public async Task EditAuthorInBookModel(BookModel bookModel, AuthorModel authorModel)
@@ -250,7 +268,7 @@ public class BookService : IBookService
         }
 
         book.DateOfRelease = releaseDate;
-        await repo.SaveChangesAsync();
+        //await repo.SaveChangesAsync();
     }
 
     public async Task<IEnumerable<BookModel>> AllBooksAsync()
@@ -259,6 +277,17 @@ public class BookService : IBookService
             .Include(b => b.Author)
             .Include(b => b.Genres)
             .ToListAsync();
+
+        return BooksToBookModels(books);
+    }
+
+    public async Task SaveChangesAsync()
+    {
+        await repo.SaveChangesAsync();
+    }
+
+    private IEnumerable<BookModel> BooksToBookModels(IEnumerable<Book> books)
+    {
         return books.Select(b => new BookModel
         {
             Id = b.Id,
@@ -278,6 +307,4 @@ public class BookService : IBookService
             }).ToList(),
         });
     }
-
-
 }

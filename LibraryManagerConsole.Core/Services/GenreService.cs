@@ -25,7 +25,9 @@ namespace LibraryManagerConsole.Core.Services
             {
                 throw new ArgumentException("Required argument is null or empty");
             }
+
             var genre = await repo.All<Genre>().Where(g => g.Name == genreName).FirstOrDefaultAsync();
+
             if (genre == null)
             {
                 return new GenreModel { Name = genreName };
@@ -64,15 +66,39 @@ namespace LibraryManagerConsole.Core.Services
             writer.WriteLine($"Existing Genres added to book : {existingGenresCounter}");
             return book;
         }
-        public GenreModel FindGenreInBook(BookModel book, string genreName)
+        public GenreModel FindGenreInBookModel(BookModel bookModel, string genreName)
         {
-            GenreModel? genre = book.Genres.Where(g => g.Name == genreName).FirstOrDefault();
-            if (genre == null)
+            if (genreName.IsNullOrEmpty())
             {
-                writer.WriteLine($"No such genre in '{book.Title}' book");
-                throw new ArgumentException($"No such genre in book - {book.Title}");
+                throw new ArgumentException("A required argument is null or empty");
             }
-            return genre;
+
+            GenreModel? genreModel = bookModel.Genres.Where(g => g.Name == genreName).FirstOrDefault();
+            if (genreModel == null)
+            {
+                //writer.WriteLine($"No such genre in '{book.Title}' book");
+                throw new ArgumentException($"No such genre in book - '{bookModel.Title}'");
+            }
+            return genreModel;
+        }
+        public async Task<GenreModel> FindGenreAsync(string genreName)
+        {
+            if (genreName.IsNullOrEmpty())
+            {
+                throw new ArgumentException("A required argument is null or empty");
+            }
+
+            var genre = await repo.All<Genre>().Where(g => g.Name == genreName).FirstOrDefaultAsync();
+
+            if (genre is null)
+            {
+                throw new ArgumentException("There's no genre with this name in the DB");
+            }
+            return new GenreModel
+            {
+                Name = genre.Name,
+                Id = genre.Id,
+            };
         }
         public Task AddGenre()
         {
