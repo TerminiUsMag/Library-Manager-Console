@@ -5,7 +5,6 @@ using LibraryManagerConsole.Infrastructure.Common;
 using LibraryManagerConsole.Infrastructure.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using static System.Reflection.Metadata.BlobBuilder;
 
 namespace LibraryManagerConsole.Core.Services;
 
