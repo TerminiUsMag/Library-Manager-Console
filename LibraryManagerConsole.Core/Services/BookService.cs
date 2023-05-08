@@ -23,11 +23,12 @@ public class BookService : IBookService
         this.genreService = genreService;
         this.authorService = authorService;
     }
+
     /// <summary>
-    /// Adds book to DataBase
+    /// Adds Book to the Database
     /// </summary>
-    /// <param name="bookModel">BookModel to add</param>
-    /// <returns></returns>
+    /// <param name="bookModel">BookModel to add to DB</param>
+    /// <returns>Nothing</returns>
     /// <exception cref="ArgumentException"></exception>
     public async Task AddBookAsync(BookModel bookModel)
     {
@@ -52,7 +53,10 @@ public class BookService : IBookService
         await repo.SaveChangesAsync();
     }
 
-
+    /// <summary>
+    /// Returns all books(with their Authors and Genres) in DB as readonly
+    /// </summary>
+    /// <returns>Collection of Book models</returns>
     public async Task<IEnumerable<BookModel>> AllBooksReadOnlyAsync()
     {
         var books = await repo.AllReadonly<Book>().Include(b => b.Author).Include(b => b.Genres)
@@ -77,6 +81,11 @@ public class BookService : IBookService
         }).ToList();
     }
 
+    /// <summary>
+    /// Deletes a Book from Database
+    /// </summary>
+    /// <param name="bookModel">Book Model to delete from DB</param>
+    /// <returns>Nothing</returns>
     public async Task DeleteBookAsync(BookModel bookModel)
     {
         var book = await repo.All<Book>().Where(b => b.Title == bookModel.Title).FirstOrDefaultAsync();
@@ -87,6 +96,12 @@ public class BookService : IBookService
         await repo.DeleteAsync<Book>(book.Id);
         await repo.SaveChangesAsync();
     }
+
+    /// <summary>
+    /// Deletes a Book from Database
+    /// </summary>
+    /// <param name="book">Book to delete from DB</param>
+    /// <returns>Nothing</returns>
     public async Task DeleteBookAsync(Book book)
     {
         if(book is null)
@@ -96,6 +111,12 @@ public class BookService : IBookService
         await repo.DeleteAsync<Book>(book.Id);
         await repo.SaveChangesAsync();
     }
+
+    /// <summary>
+    /// Deletes a Collection of Books from DB
+    /// </summary>
+    /// <param name="bookModels">Collecton of Book Models to delete from DB</param>
+    /// <returns>Nothing</returns>
     public async Task DeleteBooksAsync(IEnumerable<BookModel> bookModels)
     {
         var books = await repo.AllReadonly<Book>().ToListAsync();
@@ -113,6 +134,11 @@ public class BookService : IBookService
         }
     }
 
+    /// <summary>
+    /// Checks the DB for a book with the following ID if it exists return a book model of it.
+    /// </summary>
+    /// <param name="id">Id to search for in DB</param>
+    /// <returns>BookModel</returns>
     public async Task<BookModel> GetBookModelByIdAsync(int id)
     {
         var book = await repo.GetByIdAsync<Book>(id);
@@ -135,27 +161,42 @@ public class BookService : IBookService
             }).ToList()
         };
     }
-    public void AddGenresToBookModel(BookModel book, string[] genreNames)
+
+    /// <summary>
+    /// Adds Genres to book model
+    /// </summary>
+    /// <param name="bookModel">book model to add genres to</param>
+    /// <param name="genreNames">genres to add to book model (strings separated with " ")</param>
+    public void AddGenresToBookModel(BookModel bookModel, string genreNames)
     {
-        for (int i = 0; i < genreNames.Length; i++)
+        var genres = genreNames.Split(' ',StringSplitOptions.RemoveEmptyEntries);
+
+        for (int i = 0; i < genres.Length; i++)
         {
-            if (!book.Genres.Any(g => g.Name == genreNames[i]))
+            if (!bookModel.Genres.Any(g => g.Name == genres[i]))
             {
-                book.Genres.Add(new GenreModel
+                bookModel.Genres.Add(new GenreModel
                 {
-                    Name = genreNames[i]
+                    Name = genres[i]
                 });
             }
         }
     }
-    public void AddGenreToBookModel(BookModel book, GenreModel genre)
+
+    /// <summary>
+    /// Adds Genre to book model
+    /// </summary>
+    /// <param name="bookModel"></param>
+    /// <param name="genreModel"></param>
+    /// <exception cref="ArgumentException"></exception>
+    public void AddGenreToBookModel(BookModel bookModel, GenreModel genreModel)
     {
 
-        if (book.Genres.Any(g => g.Name == genre.Name))
+        if (bookModel.Genres.Any(g => g.Name == genreModel.Name))
         {
             throw new ArgumentException("There's already a genre with this name in the book");
         }
-        book.Genres.Add(genre);
+        bookModel.Genres.Add(genreModel);
     }
     public void RemoveGenreFromBookModel(BookModel bookModel, string genreName)
     {

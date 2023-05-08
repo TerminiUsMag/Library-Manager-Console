@@ -104,7 +104,7 @@ namespace LibraryManagerConsole.Core.Services
 
         public async Task<Author> FindAuthorAsync(string fullName)
         {
-            var names = fullName.Split(' ');
+            var names = fullName.Split(' ',StringSplitOptions.RemoveEmptyEntries);
 
             var author = await repo
                 .All<Author>()
@@ -135,7 +135,7 @@ namespace LibraryManagerConsole.Core.Services
 
             writer.WriteLine("Enter new full name for Author with ID:" + author.Id + " (separate with ' ')");
             var newFullName = reader.ReadLine();
-            var names = newFullName.Split(" ");
+            var names = newFullName.Split(" ",StringSplitOptions.RemoveEmptyEntries);
             author.FirstName = names[0];
             author.MiddleName = names[1];
             author.LastName = names[2];
