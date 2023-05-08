@@ -6,7 +6,7 @@ namespace LibraryManagerConsole.Core.Contracts
     public interface IBookService
     {
         /// <summary>
-        /// Adds Book to the Database
+        /// Adds a Book to the Database
         /// </summary>
         /// <param name="bookModel">BookModel to add to DB</param>
         /// <returns></returns>
@@ -35,13 +35,13 @@ namespace LibraryManagerConsole.Core.Contracts
         Task DeleteBooksAsync(IEnumerable<BookModel> bookModels);
 
         /// <summary>
-        /// Returns all books(with their Authors and Genres) in DB as readonly
+        /// Returns all books(with their Authors and Genres) from DB as readonly Book Models
         /// </summary>
         /// <returns></returns>
         Task<IEnumerable<BookModel>> AllBooksReadOnlyAsync();
 
         /// <summary>
-        /// Returns all books(with their Authors and Genres) from DB as Book models
+        /// Returns all books(with their Authors and Genres) from DB as Book Models
         /// </summary>
         /// <returns></returns>
         Task<IEnumerable<BookModel>> AllBooksAsync();

@@ -35,4 +35,3 @@ foreach (var book in books)
     writer.EmptyLine();
     writer.WriteLine(book);
 }
-

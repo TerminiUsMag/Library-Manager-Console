@@ -25,7 +25,7 @@ public class BookService : IBookService
     }
 
     /// <summary>
-    /// Adds Book to the Database
+    /// Adds a Book to the Database
     /// </summary>
     /// <param name="bookModel">BookModel to add to DB</param>
     /// <returns>Nothing</returns>
@@ -54,7 +54,7 @@ public class BookService : IBookService
     }
 
     /// <summary>
-    /// Returns all books(with their Authors and Genres) in DB as readonly
+    /// Returns all books(with their Authors and Genres) from DB as readonly Book Models
     /// </summary>
     /// <returns>Collection of Book models</returns>
     public async Task<IEnumerable<BookModel>> AllBooksReadOnlyAsync()
@@ -184,10 +184,30 @@ public class BookService : IBookService
     }
 
     /// <summary>
+    /// Adds Genres to book model
+    /// </summary>
+    /// <param name="bookModel">book model to add genres to</param>
+    /// <param name="genreNames">genres to add to book model (string array)</param>
+    public void AddGenresToBookModel(BookModel bookModel, string[] genreNames)
+    {
+
+        for (int i = 0; i < genreNames.Length; i++)
+        {
+            if (!bookModel.Genres.Any(g => g.Name == genreNames[i]))
+            {
+                bookModel.Genres.Add(new GenreModel
+                {
+                    Name = genreNames[i]
+                });
+            }
+        }
+    }
+
+    /// <summary>
     /// Adds Genre to book model
     /// </summary>
-    /// <param name="bookModel"></param>
-    /// <param name="genreModel"></param>
+    /// <param name="bookModel">book model to add genre to</param>
+    /// <param name="genreModel">genre model to add to book model</param>
     /// <exception cref="ArgumentException"></exception>
     public void AddGenreToBookModel(BookModel bookModel, GenreModel genreModel)
     {
@@ -198,6 +218,12 @@ public class BookService : IBookService
         }
         bookModel.Genres.Add(genreModel);
     }
+
+    /// <summary>
+    /// Removes genre from book model
+    /// </summary>
+    /// <param name="bookModel">book model to remove genre from</param>
+    /// <param name="genreName">name of the genre to remove from book model</param>
     public void RemoveGenreFromBookModel(BookModel bookModel, string genreName)
     {
         try
@@ -211,13 +237,23 @@ public class BookService : IBookService
         }
     }
 
+    /// <summary>
+    /// Create a book model
+    /// </summary>
+    /// <param name="bookTitle">title of book model</param>
+    /// <param name="authorFirstName">first name of the author</param>
+    /// <param name="authorMiddleName">middle name of the author</param>
+    /// <param name="authorLastName">last name of the author</param>
+    /// <param name="releaseDate">date of release</param>
+    /// <param name="bookGenres">genres of book</param>
+    /// <returns>Book Model</returns>
+    /// <exception cref="ArgumentException"></exception>
     public BookModel CreateFullBookModel(string bookTitle, string authorFirstName, string authorMiddleName, string authorLastName, string releaseDate, string[] bookGenres)
     {
         if (bookTitle.IsNullOrEmpty() || authorFirstName.IsNullOrEmpty() || authorMiddleName.IsNullOrEmpty() || authorLastName.IsNullOrEmpty() || bookGenres.Length < 1)
         {
             throw new ArgumentException("One or more of the required parameters is null or empty!");
         }
-        //DateTime dateOfRelease;
         if (!DateTime.TryParse(releaseDate, out DateTime dateOfRelease))
         {
             dateOfRelease = DateTime.Now.Date;
@@ -233,12 +269,20 @@ public class BookService : IBookService
                 LastName = authorLastName
             },
             DateOfRelease = dateOfRelease.Date,
-            //Genres = new List<GenreModel>()
         };
         this.AddGenresToBookModel(newBookModel, bookGenres);
         return newBookModel;
     }
+
     //Test required!
+
+    /// <summary>
+    /// Edits author of book
+    /// </summary>
+    /// <param name="bookModel">Book model to edit author of</param>
+    /// <param name="authorFullname">Author's new full name in the format : "'First name' 'Middle name' 'Last name'"</param>
+    /// <returns>Nothing</returns>
+    /// <exception cref="ArgumentException"></exception>
     public async Task EditAuthorInBookModel(BookModel bookModel, string authorFullname)
     {
         var book = await repo
@@ -259,21 +303,31 @@ public class BookService : IBookService
         catch (Exception)
         {
             var author = book.Author;
-            var authorNames = authorFullname.Split(" ");
+            var authorNames = authorFullname.Split(" ", StringSplitOptions.RemoveEmptyEntries);
             author.FirstName = authorNames[0];
             author.MiddleName = authorNames[1];
             author.LastName = authorNames[2];
         }
-
-        //await repo.SaveChangesAsync();
     }
 
+    /// <summary>
+    /// Edits author of book
+    /// </summary>
+    /// <param name="bookModel">Book model to edit author of</param>
+    /// <param name="authorModel">Author model with the new author of the book</param>
+    /// <returns>Nothing</returns>
+    /// <exception cref="ArgumentException"></exception>
     public async Task EditAuthorInBookModel(BookModel bookModel, AuthorModel authorModel)
     {
         var authorFullName = authorModel.ToString();
         await this.EditAuthorInBookModel(bookModel, authorFullName);
     }
 
+    /// <summary>
+    /// Find author by full name
+    /// </summary>
+    /// <param name="authorName">Full author name in the format "'First name' 'Middle name' 'Last name'"</param>
+    /// <returns>Author model</returns>
     public async Task<AuthorModel> FindAuthor(string authorName)
     {
         var author = await authorService.FindAuthorAsync(authorName);
@@ -286,6 +340,11 @@ public class BookService : IBookService
         };
     }
 
+    /// <summary>
+    /// Update release date of a book model
+    /// </summary>
+    /// <param name="bookModel">Book model to update releae date of</param>
+    /// <param name="releaseDate">Updated release date (string)</param>
     public void UpdateReleaseDate(BookModel bookModel, string releaseDate)
     {
         if (DateTime.TryParse(releaseDate, out DateTime date))
@@ -295,6 +354,12 @@ public class BookService : IBookService
 ;
     }
 
+    /// <summary>
+    /// Update release date of a book model
+    /// </summary>
+    /// <param name="bookModel">Book model to update release date of</param>
+    /// <param name="releaseDate">Updated release date</param>
+    /// <exception cref="ArgumentException"></exception>
     public async void UpdateReleaseDate(BookModel bookModel, DateTime releaseDate)
     {
         var book = await repo
@@ -308,9 +373,12 @@ public class BookService : IBookService
         }
 
         book.DateOfRelease = releaseDate;
-        //await repo.SaveChangesAsync();
     }
 
+    /// <summary>
+    /// Returns all books(with their Authors and Genres) from DB as Book Models
+    /// </summary>
+    /// <returns></returns>
     public async Task<IEnumerable<BookModel>> AllBooksAsync()
     {
         var books = await repo.All<Book>()
@@ -321,11 +389,20 @@ public class BookService : IBookService
         return BooksToBookModels(books);
     }
 
+    /// <summary>
+    /// Saves all changes to all DB objects in the Database
+    /// </summary>
+    /// <returns></returns>
     public async Task SaveChangesAsync()
     {
         await repo.SaveChangesAsync();
     }
 
+    /// <summary>
+    /// Private conversion method (from Book Collection to Book Model Collection)
+    /// </summary>
+    /// <param name="books">Books Collection</param>
+    /// <returns>Book Model Collection</returns>
     private IEnumerable<BookModel> BooksToBookModels(IEnumerable<Book> books)
     {
         return books.Select(b => new BookModel
