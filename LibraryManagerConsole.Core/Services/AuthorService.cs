@@ -18,22 +18,20 @@ namespace LibraryManagerConsole.Core.Services
             this.writer = _writer;
             this.reader = _reader;
         }
+
+        /// <summary>
+        /// Transfers Author from Book Model to Book (If exists in DB else creates new Author with Author Model names)
+        /// </summary>
+        /// <param name="book">Book to tranfer to</param>
+        /// <param name="bookModel">Book Model to transfer from</param>
+        /// <returns>Book</returns>
         public async Task<Book> ExistingAuthorFromBookModelToBook(Book book, BookModel bookModel)
         {
-            var existingAuthor = await FindAuthorAsync(bookModel.ToString());
-
-            //var authors = await repo
-            //.All<Author>()
-            //.ToListAsync();
-
-            //var existingAuthor = authors
-            //    .Where(a => a.FirstName == bookModel.Author.FirstName && a.MiddleName == bookModel.Author.MiddleName && a.LastName == bookModel.Author.LastName)
-            //    .ToList();
+            var existingAuthor = await FindAuthorAsync(bookModel.Author.ToString());
 
             if (CheckIfAuthorIsValid(existingAuthor))
             {
                 book.Author = existingAuthor;
-                //writer.WriteLine("The author is existing!");
             }
             else
             {
@@ -46,6 +44,14 @@ namespace LibraryManagerConsole.Core.Services
             }
             return book;
         }
+
+        /// <summary>
+        /// Update Author of Book In DB
+        /// </summary>
+        /// <param name="bookModel">Book Model to update</param>
+        /// <param name="authorModel">Updated Author Model</param>
+        /// <returns>Nothing</returns>
+        /// <exception cref="ArgumentException"></exception>
         public async Task UpdateAuthorOfBookInDbAsync(BookModel bookModel, AuthorModel authorModel)
         {
             var book = await repo
@@ -73,6 +79,12 @@ namespace LibraryManagerConsole.Core.Services
             await repo.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Deletes Author from Database
+        /// </summary>
+        /// <param name="authorModel">Author Model to delete</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         public async Task DeleteAuthorFromDBAsync(AuthorModel authorModel)
         {
             var author = await this.FindAuthorAsync(authorModel.ToString());
@@ -86,6 +98,12 @@ namespace LibraryManagerConsole.Core.Services
             await repo.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Returns an Author if exists in DB
+        /// </summary>
+        /// <param name="id">Id of Author</param>
+        /// <returns>Author</returns>
+        /// <exception cref="ArgumentException"></exception>
         public async Task<Author> FindAuthorAsync(int id)
         {
             var author = await repo
@@ -102,6 +120,12 @@ namespace LibraryManagerConsole.Core.Services
 
         }
 
+        /// <summary>
+        /// Returns an Author if exists in DB
+        /// </summary>
+        /// <param name="fullName">Full name of Author in the format : "'First name' 'Middle name' 'Last name'"</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         public async Task<Author> FindAuthorAsync(string fullName)
         {
             var names = fullName.Split(' ',StringSplitOptions.RemoveEmptyEntries);
@@ -119,6 +143,12 @@ namespace LibraryManagerConsole.Core.Services
             return author!;
         }
 
+        /// <summary>
+        /// Update existing Author
+        /// </summary>
+        /// <param name="authorModel">Author to find</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         public async Task UpdateAuthorAsync(AuthorModel authorModel)
         {
             if (CheckIfAuthorIsValid(authorModel))
@@ -142,6 +172,11 @@ namespace LibraryManagerConsole.Core.Services
             await repo.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Private validation method
+        /// </summary>
+        /// <param name="author">Author to validate</param>
+        /// <returns></returns>
         private bool CheckIfAuthorIsValid(Object author)
         {
             if (author is null)
