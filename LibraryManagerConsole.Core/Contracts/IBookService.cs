@@ -1,4 +1,5 @@
 ﻿using LibraryManagerConsole.Core.Models;
+using LibraryManagerConsole.Infrastructure.Data.Models;
 
 namespace LibraryManagerConsole.Core.Contracts
 {
@@ -12,28 +13,31 @@ namespace LibraryManagerConsole.Core.Contracts
         Task<IEnumerable<BookModel>> AllBooksReadOnlyAsync();
         Task<IEnumerable<BookModel>> AllBooksAsync();
 
-        Task<BookModel> GetBookByIdAsync(int id);
+        Task<BookModel> GetBookModelByIdAsync(int id);
 
         void AddGenresToBookModel(BookModel book, string[] genreNames);
 
         void AddGenreToBookModel(BookModel book, GenreModel genre);
+
         BookModel CreateFullBookModel(string bookTitle, string authorFirstName, string authorMiddleName, string authorLastName, string releaseDate, string[] bookGenres);
 
-        void RemoveGenreFromBook(BookModel book, string genreName);
+        void RemoveGenreFromBookModel(BookModel book, string genreName);
 
         //private GenreModel FindGenreInBook(BookModel book, string genreName);
 
-        void EditAuthor(BookModel book, string authorName);
+        Task EditAuthorInBookModel(BookModel bookModel, string authorName);
 
-        void EditAuthor(BookModel book, AuthorModel author);
+        Task EditAuthorInBookModel(BookModel bookModel, AuthorModel author);
 
-        void DeleteAuthor(BookModel book, string authorName);
+        Task<AuthorModel> FindAuthor(string authorName);
 
-        AuthorModel FindAuthor(string authorName);
+        void UpdateReleaseDate(BookModel bookModel, string releaseDate);
 
-        void UpdateReleaseDate(BookModel book, string releaseDate);
+        void UpdateReleaseDate(BookModel bookModel, DateTime releaseDate);
 
+        Task SaveChangesAsync();
 
+        Task DeleteBookAsync(Book book);
 
     }
 }

@@ -14,7 +14,7 @@ public class BookService : IBookService
     private readonly IWriter writer = null!;
     private readonly IReader reader = null!;
     private readonly IGenreService genreService = null!;
-    private readonly IAuthorService authorService= null!;
+    private readonly IAuthorService authorService = null!;
     public BookService(IRepository _repo, IWriter _writer, IReader _reader, IGenreService genreService, IAuthorService authorService)
     {
         this.repo = _repo;
@@ -23,20 +23,27 @@ public class BookService : IBookService
         this.genreService = genreService;
         this.authorService = authorService;
     }
-
+    /// <summary>
+    /// Adds book to DataBase
+    /// </summary>
+    /// <param name="bookModel">BookModel to add</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
     public async Task AddBookAsync(BookModel bookModel)
     {
+        var allBooks = await repo
+            .AllReadonly<Book>()
+            .Where(b => b.Title == bookModel.Title)
+            .FirstOrDefaultAsync();
+        if (allBooks is not null)
+        {
+            throw new ArgumentException("There's already a book with that title in the library");
+        }
         var book = new Book
         {
             Title = bookModel.Title,
             DateOfRelease = bookModel.DateOfRelease,
         };
-
-        var allBooks = await repo.AllReadonly<Book>().ToListAsync();
-        if (allBooks.Any(b => b.Title == book.Title))
-        {
-            throw new ArgumentException("There's already a book with that title in the library");
-        }
 
         book = await authorService.ExistingAuthorFromBookModelToBook(book, bookModel);
         book = await genreService.ExistingGenresFromBookModelToBook(book, bookModel);
@@ -73,7 +80,16 @@ public class BookService : IBookService
     public async Task DeleteBookAsync(BookModel bookModel)
     {
         var book = await repo.All<Book>().Where(b => b.Title == bookModel.Title).FirstOrDefaultAsync();
-        if (book == null)
+        if (book is null)
+        {
+            return;
+        }
+        await repo.DeleteAsync<Book>(book.Id);
+        await repo.SaveChangesAsync();
+    }
+    public async Task DeleteBookAsync(Book book)
+    {
+        if(book is null)
         {
             return;
         }
@@ -82,13 +98,22 @@ public class BookService : IBookService
     }
     public async Task DeleteBooksAsync(IEnumerable<BookModel> bookModels)
     {
+        var books = await repo.AllReadonly<Book>().ToListAsync();
+
+
         foreach (var bookModel in bookModels)
         {
-            await DeleteBookAsync(bookModel);
+            var book = books.Where(b => b.Title == bookModel.Title).FirstOrDefault();
+            //if (book is null)
+            //{
+            //    continue;
+            //}
+            
+            await DeleteBookAsync(book!);
         }
     }
 
-    public async Task<BookModel> GetBookByIdAsync(int id)
+    public async Task<BookModel> GetBookModelByIdAsync(int id)
     {
         var book = await repo.GetByIdAsync<Book>(id);
         return new BookModel
@@ -132,13 +157,12 @@ public class BookService : IBookService
         }
         book.Genres.Add(genre);
     }
-    public async void RemoveGenreFromBook(BookModel book, string genreName)
+    public void RemoveGenreFromBookModel(BookModel bookModel, string genreName)
     {
         try
         {
-            var genre = genreService.FindGenreInBook(book, genreName);
-            book.Genres.Remove(genre);
-            await repo.SaveChangesAsync();
+            var genre = genreService.FindGenreInBookModel(bookModel, genreName);
+            bookModel.Genres.Remove(genre);
         }
         catch (ArgumentException aex)
         {
@@ -173,30 +197,77 @@ public class BookService : IBookService
         this.AddGenresToBookModel(newBookModel, bookGenres);
         return newBookModel;
     }
-
-    public void EditAuthor(BookModel book, string authorName)
+    //Test required!
+    public async Task EditAuthorInBookModel(BookModel bookModel, string authorFullname)
     {
-        throw new NotImplementedException();
+        var book = await repo
+            .All<Book>()
+            .Where(b => b.Title == bookModel.Title && b.DateOfRelease == bookModel.DateOfRelease)
+            .FirstOrDefaultAsync();
+
+        if (book is null)
+        {
+            throw new ArgumentException("There's no such book in DB");
+        }
+
+        try
+        {
+            var author = await authorService.FindAuthorAsync(authorFullname);
+            book.Author = author;
+        }
+        catch (Exception)
+        {
+            var author = book.Author;
+            var authorNames = authorFullname.Split(" ");
+            author.FirstName = authorNames[0];
+            author.MiddleName = authorNames[1];
+            author.LastName = authorNames[2];
+        }
+
+        //await repo.SaveChangesAsync();
     }
 
-    public void EditAuthor(BookModel book, AuthorModel author)
+    public async Task EditAuthorInBookModel(BookModel bookModel, AuthorModel authorModel)
     {
-        throw new NotImplementedException();
+        var authorFullName = authorModel.ToString();
+        await this.EditAuthorInBookModel(bookModel, authorFullName);
     }
 
-    public void DeleteAuthor(BookModel book, string authorName)
+    public async Task<AuthorModel> FindAuthor(string authorName)
     {
-        throw new NotImplementedException();
+        var author = await authorService.FindAuthorAsync(authorName);
+        return new AuthorModel
+        {
+            FirstName = author.FirstName,
+            MiddleName = author.MiddleName,
+            LastName = author.LastName,
+            Id = author.Id
+        };
     }
 
-    public AuthorModel FindAuthor(string authorName)
+    public void UpdateReleaseDate(BookModel bookModel, string releaseDate)
     {
-        throw new NotImplementedException();
+        if (DateTime.TryParse(releaseDate, out DateTime date))
+        {
+            UpdateReleaseDate(bookModel, date);
+        }
+;
     }
 
-    public void UpdateReleaseDate(BookModel book, string releaseDate)
+    public async void UpdateReleaseDate(BookModel bookModel, DateTime releaseDate)
     {
-        throw new NotImplementedException();
+        var book = await repo
+            .All<Book>()
+            .Where(b => b.Title == bookModel.Title && b.DateOfRelease == bookModel.DateOfRelease)
+            .FirstOrDefaultAsync();
+
+        if (book is null)
+        {
+            throw new ArgumentException("There's no such book in DB");
+        }
+
+        book.DateOfRelease = releaseDate;
+        //await repo.SaveChangesAsync();
     }
 
     public async Task<IEnumerable<BookModel>> AllBooksAsync()
@@ -205,6 +276,17 @@ public class BookService : IBookService
             .Include(b => b.Author)
             .Include(b => b.Genres)
             .ToListAsync();
+
+        return BooksToBookModels(books);
+    }
+
+    public async Task SaveChangesAsync()
+    {
+        await repo.SaveChangesAsync();
+    }
+
+    private IEnumerable<BookModel> BooksToBookModels(IEnumerable<Book> books)
+    {
         return books.Select(b => new BookModel
         {
             Id = b.Id,
@@ -224,6 +306,4 @@ public class BookService : IBookService
             }).ToList(),
         });
     }
-
-    
 }

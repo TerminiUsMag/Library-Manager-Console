@@ -1,5 +1,4 @@
-﻿using LibraryManagerConsole.Contracts;
-using LibraryManagerConsole.Core.Contracts;
+﻿using LibraryManagerConsole.Core.Contracts;
 using LibraryManagerConsole.Core.IO.Contracts;
 using LibraryManagerConsole.Core.IO.Readers;
 using LibraryManagerConsole.Core.IO.Writters;
@@ -30,7 +29,6 @@ var reader = host.Services.GetService<IReader>()!;
 
 Views.CreateBook(writer, reader, bookService);
 
-writer.WriteLine("Completed second part\n");
 var books = await bookService.AllBooksReadOnlyAsync();
 foreach (var book in books)
 {
