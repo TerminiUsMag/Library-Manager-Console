@@ -20,7 +20,7 @@ namespace LibraryManagerConsole.Infrastructure.Data
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Server=.;Database=Library;User Id=sa;Password=None124578;MultipleActiveResultSets=true;TrustServerCertificate=True;");
+                optionsBuilder.UseSqlServer("Server=localhost;Database=Library;User Id=sa;Password=Db12345678;MultipleActiveResultSets=true;TrustServerCertificate=True;");
             }
         }
         //protected override void OnModelCreating(ModelBuilder modelBuilder)

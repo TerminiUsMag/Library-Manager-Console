@@ -1,12 +1,42 @@
 ﻿using LibraryManagerConsole.Core.Contracts;
 using LibraryManagerConsole.Core.IO.Contracts;
+using LibraryManagerConsole.Core.Services;
+using LibraryManagerConsole.Views.Contracts;
 
 namespace LibraryManagerConsole.Views
 {
-    public static class Views
+    public class Views : IViews
     {
+        private readonly IBookService bookService;
+        private readonly IWriter writer;
+        private readonly IReader reader;
 
-        public static async void CreateBook(IWriter writer,IReader reader, IBookService bookService)
+        private static Views instance = null;
+        public Views(IBookService _bookService, IWriter _writer, IReader _reader)
+        {
+            Instance = new Views(_bookService, _writer, _reader);
+            this.bookService = _bookService;
+            this.writer = _writer;
+            this.reader = _reader;
+        }
+        public Views Instance
+        {
+            set
+            {
+                if (instance is null)
+                {
+                    instance = value;
+                }
+            }
+            //set
+            //{
+            //    if (instance is null)
+            //    {
+            //        instance = value;
+            //    }
+            //}
+        }
+        public async void CreateBook(/*IWriter writer, IReader reader/*, IBookService bookService*/)
         {
             writer.WriteLine("Write a title for the book");
             var bookTitle = reader.ReadLine().Trim();
