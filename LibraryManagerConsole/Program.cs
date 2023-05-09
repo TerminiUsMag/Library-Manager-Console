@@ -28,16 +28,12 @@ using IHost host = Host.CreateDefaultBuilder(args)
 var bookService = host.Services.GetService<IBookService>()!;
 var writer = host.Services.GetService<IWriter>()!;
 var reader = host.Services.GetService<IReader>()!;
-var views = host.Services.GetService<IViews>()!;
+//var views = host.Services.GetService<IViews>()!;
 
 writer.WriteLine("Write a title for the book");
 var bookTitle = reader.ReadLine().Trim();
-writer.WriteLine("Write author's first name");
-var authorFirstName = reader.ReadLine().Trim();
-writer.WriteLine("Write author's middle name");
-var authorMiddleName = reader.ReadLine().Trim();
-writer.WriteLine("Write author's last name");
-var authorLastName = reader.ReadLine().Trim();
+writer.WriteLine("Write author's full name in the format : 'First name' 'Second name' 'Last name'");
+var authorFullName = reader.ReadLine().Trim();
 writer.WriteLine("Write book's release date in 'DD/MM/YYYY' format (default date is today)");
 var bookReleaseDate = reader.ReadLine().Trim();
 writer.WriteLine("Write the book's Genre/s (split them with semicolon ',') : ");
@@ -45,7 +41,7 @@ var bookGenres = reader.ReadLine().Trim().Split(',');
 
 try
 {
-    var newBook = bookService.CreateFullBookModel(bookTitle, authorFirstName, authorMiddleName, authorLastName, bookReleaseDate, bookGenres);
+    var newBook = bookService.CreateFullBookModel(bookTitle, authorFullName, bookReleaseDate, bookGenres);
     writer.WriteLine(newBook);
 
     await bookService.AddBookAsync(newBook);

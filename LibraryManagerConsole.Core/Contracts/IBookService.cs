@@ -86,7 +86,7 @@ namespace LibraryManagerConsole.Core.Contracts
         /// <param name="bookGenres">genres of book</param>
         /// <returns>Book Model</returns>
         /// <exception cref="ArgumentException"></exception>
-        BookModel CreateFullBookModel(string bookTitle, string authorFirstName, string authorMiddleName, string authorLastName, string releaseDate, string[] bookGenres);
+        BookModel CreateFullBookModel(string bookTitle, string authorFullName, string releaseDate, string[] bookGenres);
 
         /// <summary>
         /// Removes genre from book model

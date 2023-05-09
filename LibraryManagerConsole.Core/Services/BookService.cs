@@ -104,7 +104,7 @@ public class BookService : IBookService
     /// <returns>Nothing</returns>
     public async Task DeleteBookAsync(Book book)
     {
-        if(book is null)
+        if (book is null)
         {
             return;
         }
@@ -129,7 +129,7 @@ public class BookService : IBookService
             //{
             //    continue;
             //}
-            
+
             await DeleteBookAsync(book!);
         }
     }
@@ -169,7 +169,7 @@ public class BookService : IBookService
     /// <param name="genreNames">genres to add to book model (strings separated with " ")</param>
     public void AddGenresToBookModel(BookModel bookModel, string genreNames)
     {
-        var genres = genreNames.Split(' ',StringSplitOptions.RemoveEmptyEntries);
+        var genres = genreNames.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
         for (int i = 0; i < genres.Length; i++)
         {
@@ -248,9 +248,16 @@ public class BookService : IBookService
     /// <param name="bookGenres">genres of book</param>
     /// <returns>Book Model</returns>
     /// <exception cref="ArgumentException"></exception>
-    public BookModel CreateFullBookModel(string bookTitle, string authorFirstName, string authorMiddleName, string authorLastName, string releaseDate, string[] bookGenres)
+    public BookModel CreateFullBookModel(string bookTitle, string authorFullName, string releaseDate, string[] bookGenres)
     {
-        if (bookTitle.IsNullOrEmpty() || authorFirstName.IsNullOrEmpty() || authorMiddleName.IsNullOrEmpty() || authorLastName.IsNullOrEmpty() || bookGenres.Length < 1)
+        if (authorFullName.IsNullOrEmpty())
+        {
+            throw new ArgumentException("One of the required parameters is null or empty!");
+        }
+
+        var authorNames = authorFullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+        if (bookTitle.IsNullOrEmpty() || authorNames.Length < 1 || bookGenres.Length < 1)
         {
             throw new ArgumentException("One or more of the required parameters is null or empty!");
         }
@@ -264,9 +271,9 @@ public class BookService : IBookService
             Title = bookTitle,
             Author = new AuthorModel
             {
-                FirstName = authorFirstName,
-                MiddleName = authorMiddleName,
-                LastName = authorLastName
+                FirstName = authorNames[0],
+                MiddleName = authorNames[1],
+                LastName = authorNames[2]
             },
             DateOfRelease = dateOfRelease.Date,
         };
