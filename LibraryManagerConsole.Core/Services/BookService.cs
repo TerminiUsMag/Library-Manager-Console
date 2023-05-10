@@ -34,9 +34,14 @@ public class BookService : IBookService
     {
         var allBooks = await repo
             .AllReadonly<Book>()
-            .Where(b => b.Title == bookModel.Title)
-            .FirstOrDefaultAsync();
-        if (allBooks is not null)
+            .ToListAsync();
+
+        var existingBook = allBooks
+            .Where(b => b.Title == bookModel.Title && b.Author.ToString()
+            == bookModel.Author.ToString())
+            .FirstOrDefault();
+
+        if (existingBook is not null)
         {
             throw new ArgumentException("There's already a book with that title in the library");
         }
@@ -257,7 +262,7 @@ public class BookService : IBookService
 
         var authorNames = authorFullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-        if (bookTitle.IsNullOrEmpty() || authorNames.Length < 1 || bookGenres.Length < 1)
+        if (bookTitle.IsNullOrEmpty() || authorNames.Length <= 1 || bookGenres.Length < 1)
         {
             throw new ArgumentException("One or more of the required parameters is null or empty!");
         }
@@ -430,5 +435,13 @@ public class BookService : IBookService
                 Id = g.Id
             }).ToList(),
         });
+    }
+
+    /// <summary>
+    /// Clears the DB
+    /// </summary>
+    public void ClearDBAsync()
+    {
+        repo.ClearDBAsync();
     }
 }

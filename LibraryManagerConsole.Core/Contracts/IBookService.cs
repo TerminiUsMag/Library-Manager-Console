@@ -141,5 +141,10 @@ namespace LibraryManagerConsole.Core.Contracts
         /// <returns></returns>
         Task SaveChangesAsync();
 
+        /// <summary>
+        /// Clears the DB
+        /// </summary>
+        void ClearDBAsync();
+
     }
 }

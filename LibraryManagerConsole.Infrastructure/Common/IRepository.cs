@@ -106,5 +106,10 @@ namespace LibraryManagerConsole.Infrastructure.Common
         /// Undo changes
         /// </summary>
         void ChangeTrackerClear();
+
+        /// <summary>
+        /// Clears the DB with  EnsureDeleted() & EnsureCreated() Async.   
+        /// </summary>
+        void ClearDBAsync();
     }
 }

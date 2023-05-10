@@ -211,5 +211,14 @@ namespace LibraryManagerConsole.Infrastructure.Common
         {
             this.Context.ChangeTracker.Clear();
         }
+
+        /// <summary>
+        /// Clears the DB using EnsureDeleted and EnsureCreated Async.
+        /// </summary>
+        public async void ClearDBAsync()
+        {
+           await this.Context.Database.EnsureDeletedAsync();
+            await this.Context.Database.EnsureCreatedAsync();
+        }
     }
 }

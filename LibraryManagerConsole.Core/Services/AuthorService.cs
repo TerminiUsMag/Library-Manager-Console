@@ -128,19 +128,19 @@ namespace LibraryManagerConsole.Core.Services
         /// <exception cref="ArgumentException"></exception>
         public async Task<Author> FindAuthorAsync(string fullName)
         {
-            var names = fullName.Split(' ',StringSplitOptions.RemoveEmptyEntries);
+            var names = fullName.Split(' ',StringSplitOptions.RemoveEmptyEntries).Select(a=>a.Trim()).ToList();
 
             var author = await repo
                 .All<Author>()
                 .Where(a => a.FirstName == names[0] && a.MiddleName == names[1] && a.LastName == names[2])
                 .FirstOrDefaultAsync();
 
-            if (CheckIfAuthorIsValid(author!))
+            if (CheckIfAuthorIsValid(author))
             {
-                throw new ArgumentException("No author with this name in Database");
+                return author;
             }
 
-            return author!;
+            return null;
         }
 
         /// <summary>
