@@ -1,4 +1,5 @@
-﻿using LibraryManagerConsole.Core.Contracts;
+﻿using LibraryManagerConsole.Core.Common;
+using LibraryManagerConsole.Core.Contracts;
 using LibraryManagerConsole.Core.IO.Contracts;
 using LibraryManagerConsole.Core.Models;
 using LibraryManagerConsole.Infrastructure.Common;
@@ -242,6 +243,50 @@ public class BookService : IBookService
         }
     }
 
+/// <summary>
+/// Create a book model
+/// </summary>
+/// <param name="args">Arguments for new bookModel creation. Type -> BookModelArgs</param>
+/// <returns></returns>
+/// <exception cref="ArgumentException"></exception>
+    public BookModel CreateFullBookModel(BookModelArgs args)
+    {
+        var bookTitle = args.Title;
+        var authorFullName = args.AuthorName;
+        var releaseDate = args.ReleaseDate;
+        var bookGenres = args.Genres;
+
+        if (authorFullName.IsNullOrEmpty())
+        {
+            throw new ArgumentException("One of the required parameters is null or empty!");
+        }
+
+        var authorNames = authorFullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+        if (bookTitle.IsNullOrEmpty() || authorNames.Length <= 1 || bookGenres.Length < 1)
+        {
+            throw new ArgumentException("One or more of the required parameters is null or empty!");
+        }
+        if (!DateTime.TryParse(releaseDate, out DateTime dateOfRelease))
+        {
+            dateOfRelease = DateTime.Now.Date;
+        }
+
+        var newBookModel = new BookModel
+        {
+            Title = bookTitle,
+            Author = new AuthorModel
+            {
+                FirstName = authorNames[0],
+                MiddleName = authorNames[1],
+                LastName = authorNames[2]
+            },
+            DateOfRelease = dateOfRelease.Date,
+        };
+        this.AddGenresToBookModel(newBookModel, bookGenres);
+        return newBookModel;
+    }
+
     /// <summary>
     /// Create a book model
     /// </summary>
@@ -255,6 +300,7 @@ public class BookService : IBookService
     /// <exception cref="ArgumentException"></exception>
     public BookModel CreateFullBookModel(string bookTitle, string authorFullName, string releaseDate, string[] bookGenres)
     {
+
         if (authorFullName.IsNullOrEmpty())
         {
             throw new ArgumentException("One of the required parameters is null or empty!");

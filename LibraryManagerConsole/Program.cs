@@ -1,4 +1,5 @@
-﻿using LibraryManagerConsole.Core.Contracts;
+﻿using LibraryManagerConsole.Core.Common;
+using LibraryManagerConsole.Core.Contracts;
 using LibraryManagerConsole.Core.IO.Contracts;
 using LibraryManagerConsole.Core.IO.Readers;
 using LibraryManagerConsole.Core.IO.Writters;
@@ -41,7 +42,8 @@ var bookGenres = reader.ReadLine().Trim().Split(',');
 
 try
 {
-    var newBook = bookService.CreateFullBookModel(bookTitle, authorFullName, bookReleaseDate, bookGenres);
+    var BookModelArgs = new BookModelArgs(bookTitle, authorFullName, bookReleaseDate, bookGenres);
+    var newBook = bookService.CreateFullBookModel(BookModelArgs);
     writer.WriteLine(newBook);
 
     await bookService.AddBookAsync(newBook);

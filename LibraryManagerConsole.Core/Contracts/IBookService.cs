@@ -1,4 +1,5 @@
-﻿using LibraryManagerConsole.Core.Models;
+﻿using LibraryManagerConsole.Core.Common;
+using LibraryManagerConsole.Core.Models;
 using LibraryManagerConsole.Infrastructure.Data.Models;
 
 namespace LibraryManagerConsole.Core.Contracts
@@ -87,6 +88,8 @@ namespace LibraryManagerConsole.Core.Contracts
         /// <returns>Book Model</returns>
         /// <exception cref="ArgumentException"></exception>
         BookModel CreateFullBookModel(string bookTitle, string authorFullName, string releaseDate, string[] bookGenres);
+
+        BookModel CreateFullBookModel(BookModelArgs args);
 
         /// <summary>
         /// Removes genre from book model
